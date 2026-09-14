@@ -134,8 +134,9 @@ function parseCSV(text){
   const h=rows.shift(); return rows.filter(r=>r.length===h.length).map(r=>Object.fromEntries(h.map((k,i)=>[k,r[i]])));
 }
 function buildData(recs){
-  const num = s => { if (typeof s==='number') return s; s=String(s||'').trim().replace(/\s/g,''); if(!s) return 0;
-    if (/^-?\d{1,3}(\.\d{3})+(,\d+)?$/.test(s)) s=s.replace(/\./g,'').replace(',','.');        // 6.866.379,12
+  const num = s => { if (typeof s==='number') return s; s=String(s||'').trim().replace(/[\s$]/g,''); if(!s) return 0;
+    if (/^-?\d+([.,]\d+)?[eE][+-]?\d+$/.test(s)) s=s.replace(',','.');                              // 6,87E+06
+    else if (/^-?\d{1,3}(\.\d{3})+(,\d+)?$/.test(s)) s=s.replace(/\./g,'').replace(',','.');        // 6.866.379,12
     else if (/^-?\d+,\d+$/.test(s)) s=s.replace(',','.');                                          // 6866379,12
     else if (/^-?\d{1,3}(,\d{3})+(\.\d+)?$/.test(s)) s=s.replace(/,/g,'');                        // 6,866,379.12
     const n=parseFloat(s); return isFinite(n)?n:0; };
