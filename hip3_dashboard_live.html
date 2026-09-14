@@ -199,7 +199,7 @@ const shareChart = new Chart(document.getElementById('cShare'),{type:'line',data
 const setMode = p => { pct=p; document.getElementById('btnAbs').setAttribute('aria-pressed',!p); document.getElementById('btnPct').setAttribute('aria-pressed',p); shareChart.data.datasets=mkShareDs(); shareChart.options.scales.y.max = p?100:undefined; shareChart.update(); };
 document.getElementById('btnAbs').onclick=()=>setMode(false);
 document.getElementById('btnPct').onclick=()=>setMode(true);
-document.getElementById('calloutShare').textContent = `XYZ holds between ${Math.min(...D.byDex.xyz.map((v,i)=>v/totals[i]*100)).toFixed(0)}% y ${Math.max(...D.byDex.xyz.map((v,i)=>v/totals[i]*100)).toFixed(0)}% of volume. When total volume drops (weekends), the small deployers’ share rises: on ${labels[iLast]} Markets reached ${mkShare[iLast].toFixed(2)}%.`;
+document.getElementById('calloutShare').textContent = `${(()=>{const top=order[order.length-1]; const sh=D.byDex[top].map((v,i)=>v/totals[i]*100); const iHi=mkShare.indexOf(Math.max(...mkShare)); return `${D.dexNames[top]} holds between ${Math.min(...sh).toFixed(0)}% and ${Math.max(...sh).toFixed(0)}% of volume. When total volume drops (weekends), the small deployers’ share rises: on ${labels[iHi]} Markets reached ${mkShare[iHi].toFixed(2)}%.`})()};
 
 // Markets by index
 const coins = Object.keys(D.mkVol);
