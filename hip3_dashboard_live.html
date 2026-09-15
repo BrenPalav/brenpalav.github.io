@@ -13,7 +13,7 @@
     --background:#0C0C0D; --surface:#141415; --foreground:#F3F3F1;
     --muted-foreground:#A8A8A4; --caption:#767660;
     --accent:#F7951D; --accent-dark:#C46F0E; --accent-foreground:#0C0C0D;
-    --border:#28282A; --grid:#232325; --mk-soft:#2A1B0B;
+    --border:#28282A; --grid:#2E2E31; --tick:#D6D6D2; --mk-soft:#2A1B0B;
     --xyz:#6E8FC9; --io:#7FB49C; --para:#6F7772; --mk:#F7951D;
     --us500:#F7951D; --ustech:#F5B98C; --small:#B07A58; --bond:#8C8276;
     --font-sans:"Space Grotesk","Helvetica Neue",Helvetica,Arial,sans-serif;
@@ -23,7 +23,7 @@
     --background:#F3F5F2; --surface:#FFFFFF; --foreground:#17201C;
     --muted-foreground:#4E5A54; --caption:#8A948E;
     --accent:#C46F0E; --accent-dark:#8F4F06; --accent-foreground:#FFFFFF;
-    --border:#DCE1DD; --grid:#E6E9E6; --mk-soft:#FBE3D8;
+    --border:#DCE1DD; --grid:#E6E9E6; --tick:#3C4742; --mk-soft:#FBE3D8;
     --xyz:#2E4A7D; --io:#5F8F7A; --para:#B6BDB8; --mk:#C46F0E;
     --us500:#C46F0E; --ustech:#E0A070; --small:#8C5A3C; --bond:#C9B8AE;
   }
@@ -207,7 +207,7 @@ async function loadData(){
 const EMBED = window.self!==window.top; if (EMBED) document.documentElement.classList.add('embedded');
 const charts = [];
 function applyTheme(light){ document.documentElement.dataset.theme = light?'light':''; const b=document.getElementById('themeBtn'); b.setAttribute('aria-pressed',light); b.lastElementChild.textContent = light?'Dark mode':'Light mode';
-  Chart.defaults.color = css('--muted-foreground'); Chart.defaults.borderColor = css('--grid'); charts.forEach(c=>{ c.options.scales && Object.values(c.options.scales).forEach(sc=>{ if(sc.grid) sc.grid.color=css('--grid'); }); c.update('none'); }); }
+  Chart.defaults.color = css('--tick'); Chart.defaults.borderColor = css('--grid'); charts.forEach(c=>{ c.options.scales && Object.values(c.options.scales).forEach(sc=>{ if(sc.grid) sc.grid.color=css('--grid'); }); c.update('none'); }); }
 document.getElementById('themeBtn').addEventListener('click',()=>applyTheme(document.documentElement.dataset.theme!=='light'));
 const MOBILE = () => window.innerWidth < 760;
 loadData().then(D=>{ render(D); if (EMBED) setTimeout(()=>window.scrollTo(0,0),50); });
@@ -226,7 +226,7 @@ const totals = D.days.map((_,i)=>Object.values(D.byDex).reduce((s,a)=>s+a[i],0))
 const order = D.order;
 
 Chart.defaults.font.family = css('--font-mono');
-Chart.defaults.color = css('--muted-foreground');
+Chart.defaults.color = css('--tick');
 Chart.defaults.borderColor = css('--grid');
 Chart.defaults.font.size = MOBILE()?11:12;
 
@@ -247,7 +247,7 @@ legend('legDex', order.slice().reverse().map(d=>[D.dexNames[d],C[d]]));
 // Share chart
 let pct=false;
 const mkShareDs = () => order.map(d=>({label:D.dexNames[d], data:D.byDex[d].map((v,i)=>pct? v/totals[i]*100 : v), borderColor:C[d], backgroundColor:C[d]+(isMk(d)?'33':'B3'), fill:true, borderWidth:isMk(d)?2:1, pointRadius:3, pointHoverRadius:5, tension:.25}));
-const shareChart = charts[charts.length] = new Chart(document.getElementById('cShare'),{type:'line',data:{labels,datasets:mkShareDs()},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+(pct?c.parsed.y.toFixed(2)+'%':fmt(c.parsed.y))}}},scales:{x:{stacked:true,grid:{display:false},ticks:{maxRotation:0,autoSkip:true,maxTicksLimit:MOBILE()?4:8}},y:{stacked:true,grid:{color:css('--grid')},ticks:{callback:v=>pct?v+'%':fmt(v),maxTicksLimit:6},max:undefined}}}});
+const shareChart = charts[charts.length] = new Chart(document.getElementById('cShare'),{type:'line',data:{labels,datasets:mkShareDs()},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:css('--surface'),titleColor:css('--foreground'),bodyColor:css('--tick'),borderColor:css('--accent'),borderWidth:1,cornerRadius:0,padding:10,titleFont:{family:css('--font-mono'),size:11},bodyFont:{family:css('--font-mono'),size:12},callbacks:{label:c=>c.dataset.label+': '+(pct?c.parsed.y.toFixed(2)+'%':fmt(c.parsed.y))}}},scales:{x:{stacked:true,grid:{display:false},ticks:{maxRotation:0,autoSkip:true,maxTicksLimit:MOBILE()?4:8}},y:{stacked:true,grid:{color:css('--grid')},ticks:{callback:v=>pct?v+'%':fmt(v),maxTicksLimit:6},max:undefined}}}});
 const setMode = p => { pct=p; document.getElementById('btnAbs').setAttribute('aria-pressed',!p); document.getElementById('btnPct').setAttribute('aria-pressed',p); shareChart.data.datasets=mkShareDs(); shareChart.options.scales.y.max = p?100:undefined; shareChart.update(); };
 document.getElementById('btnAbs').onclick=()=>setMode(false);
 document.getElementById('btnPct').onclick=()=>setMode(true);
@@ -256,18 +256,18 @@ document.getElementById('calloutShare').textContent = `${(()=>{const top=order[o
 // Markets by index
 const coins = Object.keys(D.mkVol);
 document.getElementById('liveNote').textContent = D.live ? `Updated with data through ${labels[iLast]}. Refreshes itself every time the page loads.` : `Showing a saved copy (through ${labels[iLast]}); the live sheet could not be read.`;
-legend('legMk', coins.map(c=>[c.replace('mkts:',''),CC[c]]).concat([['Total open interest',css('--foreground')]]));
+legend('legMk', coins.map(c=>[c.replace('mkts:',''),CC[c]]).concat([['Total open interest',css('--tick')]]));
 charts[charts.length] = new Chart(document.getElementById('cMk'),{data:{labels,datasets:[
   ...coins.map(c=>({type:'bar',label:c.replace('mkts:',''),data:D.mkVol[c],backgroundColor:CC[c],stack:'v',yAxisID:'y'})),
-  {type:'line',label:'Total open interest',data:D.days.map((_,i)=>coins.reduce((s,c)=>s+D.mkOi[c][i],0)),borderColor:css('--foreground'),borderWidth:2,pointRadius:3,yAxisID:'y2',tension:.25}
-]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y)}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:fmt},title:{display:true,text:'24h volume'}},y2:{position:'right',grid:{drawOnChartArea:false},ticks:{callback:fmt},title:{display:true,text:'Open interest'}}}}});
+  {type:'line',label:'Total open interest',data:D.days.map((_,i)=>coins.reduce((s,c)=>s+D.mkOi[c][i],0)),borderColor:css('--tick'),borderWidth:2,pointRadius:3,pointBackgroundColor:css('--tick'),yAxisID:'y2',tension:.25}
+]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{backgroundColor:css('--surface'),titleColor:css('--foreground'),bodyColor:css('--tick'),borderColor:css('--accent'),borderWidth:1,cornerRadius:0,padding:10,titleFont:{family:css('--font-mono'),size:11},bodyFont:{family:css('--font-mono'),size:12},callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y)}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:fmt},title:{display:true,text:'24h volume'}},y2:{position:'right',grid:{drawOnChartArea:false},ticks:{callback:fmt},title:{display:true,text:'Open interest'}}}}});
 
 // Day selects
 for (const id of ['dayScatter','dayTable']) { const s=document.getElementById(id); D.days.forEach((d,i)=>{const o=document.createElement('option');o.value=i;o.textContent=labels[i];s.appendChild(o);}); s.value=iMax; }
 
 // Scatter
 const scatterDs = i => { const rows=D.rows[D.days[i]].filter(r=>r.v>0&&r.oi>0); return order.map(d=>({label:D.dexNames[d],data:rows.filter(r=>r.dex===d).map(r=>({x:r.v,y:r.oi,coin:r.coin})),backgroundColor:isMk(d)?C[d]:C[d]+'99',borderColor:C[d],pointRadius:isMk(d)?7:4,pointHoverRadius:8})); };
-const scatter = charts[charts.length] = new Chart(document.getElementById('cScatter'),{type:'scatter',data:{datasets:scatterDs(iMax)},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw.coin} — vol ${fmt(c.raw.x)}, OI ${fmt(c.raw.y)}`}}},scales:{x:{type:'logarithmic',grid:{color:css('--grid')},title:{display:true,text:'24h volume (log)'},ticks:{callback:fmt,maxRotation:0,autoSkip:true,maxTicksLimit:MOBILE()?4:7}},y:{type:'logarithmic',grid:{color:css('--grid')},title:{display:!MOBILE(),text:'Open interest (log)'},ticks:{callback:fmt,maxTicksLimit:6}}}}});
+const scatter = charts[charts.length] = new Chart(document.getElementById('cScatter'),{type:'scatter',data:{datasets:scatterDs(iMax)},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:css('--surface'),titleColor:css('--foreground'),bodyColor:css('--tick'),borderColor:css('--accent'),borderWidth:1,cornerRadius:0,padding:10,titleFont:{family:css('--font-mono'),size:11},bodyFont:{family:css('--font-mono'),size:12},callbacks:{label:c=>`${c.raw.coin} — vol ${fmt(c.raw.x)}, OI ${fmt(c.raw.y)}`}}},scales:{x:{type:'logarithmic',grid:{color:css('--grid')},title:{display:true,text:'24h volume (log)',color:css('--muted-foreground')},ticks:{callback:fmt,maxRotation:0,autoSkip:true,maxTicksLimit:MOBILE()?4:7}},y:{type:'logarithmic',grid:{color:css('--grid')},title:{display:!MOBILE(),text:'Open interest (log)',color:css('--muted-foreground')},ticks:{callback:fmt,maxTicksLimit:6}}}}});
 document.getElementById('dayScatter').onchange=e=>{scatter.data.datasets=scatterDs(+e.target.value);scatter.update();};
 
 // Table

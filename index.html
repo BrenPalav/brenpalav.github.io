@@ -38,9 +38,9 @@ a{color:inherit}
 
 /* nav */
 header.nav{border-bottom:2px solid var(--accent);background:var(--surface)}
-header.nav .wrap{display:flex;align-items:center;justify-content:space-between;padding-top:20px;padding-bottom:20px}
+header.nav .wrap{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;padding-top:18px;padding-bottom:18px}
 .brand{font-size:18px;font-weight:700;letter-spacing:-.03em;text-decoration:none;color:var(--foreground)}
-nav ul{display:flex;align-items:center;gap:20px;list-style:none;margin:0;padding:0}
+nav ul{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:10px 16px;list-style:none;margin:0;padding:0}
 @media (min-width:768px){nav ul{gap:32px}}
 nav a{font-family:var(--font-mono);font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted-foreground);transition:color .12s}
 nav a:hover{color:var(--accent)}
@@ -90,6 +90,42 @@ h1{max-width:16ch;font-size:clamp(34px,5.5vw,64px);font-weight:700;line-height:1
 .caps p{margin:0;color:var(--muted-foreground);font-size:15px}
 .caps .n{display:block;font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;color:var(--accent);margin-bottom:12px}
 
+/* collaborations */
+.collab{padding:34px 0 0;border-top:1px solid var(--border);margin-top:34px}
+.collab p.k{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--caption);margin:0 0 14px}
+.collab ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:10px 26px;font-family:var(--font-mono);font-size:13px;letter-spacing:.04em;color:var(--muted-foreground)}
+.collab .ev{margin:18px 0 0;font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;color:var(--caption)}
+.collab .ev b{color:var(--muted-foreground);font-weight:400}
+
+/* featured case */
+.feature{position:relative;border:1px solid var(--border);border-top:2px solid var(--accent);background:var(--surface);padding:28px 22px 24px;margin-top:44px}
+.feature .tag{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);margin:0 0 12px}
+.feature h2{font-size:clamp(20px,2.4vw,27px);font-weight:700;letter-spacing:-.025em;line-height:1.2;margin:0 0 12px;max-width:26ch}
+.feature p.hook{margin:0;color:var(--muted-foreground);max-width:66ch}
+.fstats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:24px 0 0;border-top:1px solid var(--border)}
+.fstats div{padding:18px 14px 0 0;border-right:1px solid var(--border)}
+.fstats div+div{padding-left:14px}
+.fstats div:last-child{border-right:0}
+.fstats .n{font-size:clamp(22px,2.6vw,30px);font-weight:700;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
+.fstats div:first-child .n{color:var(--accent)}
+.fstats .l{font-family:var(--font-mono);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--caption);margin-top:10px;line-height:1.5}
+.feature .acts{margin-top:24px;display:flex;flex-wrap:wrap;gap:12px}
+@media (max-width:860px){.feature{padding:22px 16px 20px}.fstats{grid-template-columns:1fr 1fr}.fstats div{padding:16px 12px 12px 0}.fstats div:nth-child(2n){border-right:0;padding-left:12px}.fstats div:nth-child(-n+2){border-bottom:1px solid var(--border)}}
+
+/* experience */
+.exp{display:grid;gap:0}
+.role{display:grid;grid-template-columns:1fr;gap:12px 40px;padding:28px 0;border-top:1px solid var(--border)}
+@media (min-width:860px){.role{grid-template-columns:minmax(210px,1fr) 2fr}}
+.role:first-of-type{border-top:0;padding-top:0}
+.role .when{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--caption);display:block;margin-bottom:8px}
+.role h3{margin:0 0 4px;font-size:20px;font-weight:700;letter-spacing:-.02em;line-height:1.2}
+.role .org{font-family:var(--font-mono);font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--accent)}
+.role p{margin:0;color:var(--muted-foreground)}
+.strip{margin:14px 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:8px 22px;font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;color:var(--foreground)}
+.strip li{position:relative;padding-left:14px}
+.strip li::before{content:"+";position:absolute;left:0;color:var(--accent)}
+.role .more{display:inline-block;margin-top:14px;color:var(--accent);font-family:var(--font-mono);font-size:12px;text-transform:uppercase;letter-spacing:.1em}
+
 /* work */
 .item{display:grid;grid-template-columns:1fr;gap:20px;padding:36px 0;border-top:1px solid var(--border)}
 @media (min-width:860px){.item{grid-template-columns:minmax(220px,1fr) 2fr;gap:48px}}
@@ -127,8 +163,10 @@ footer p{margin:0;font-family:var(--font-mono);font-size:12px;text-transform:upp
     <a class="brand" href="#">Gorda Bitcoin</a>
     <nav aria-label="Main">
       <ul>
-        <li><a class="slide-underline" href="#about">About</a></li>
         <li><a class="slide-underline" href="#work">Work</a></li>
+        <li><a class="slide-underline" href="campaigns.html">Campaigns</a></li>
+        <li><a class="slide-underline" href="hip3_dashboard_live.html">Dashboard</a></li>
+        <li><a class="slide-underline" href="#about">About</a></li>
         <li><a class="slide-underline" href="#contact">Contact</a></li>
       </ul>
     </nav>
@@ -145,8 +183,26 @@ footer p{margin:0;font-family:var(--font-mono);font-size:12px;text-transform:upp
       <div class="rule"></div>
       <p class="lede">Seven years growing crypto products in LATAM, from SatoshiTango to KuCoin and MEXC. Now doing BD at Markets by Kinetiq on Hyperliquid, and measuring what I move.</p>
       <div class="cta">
-        <a class="btn orange" href="#work">See the work</a>
+        <a class="btn orange" href="campaigns.html">See the work</a>
         <a class="btn outline" href="#contact">Contact</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="feature">
+      <p class="tag">Featured case · Futures campaigns, LATAM &amp; Iberia</p>
+      <h2>I redesigned a futures campaign so it stopped paying three whales</h2>
+      <p class="hook">Prize money was landing on the same handful of accounts every week: in the first campaign, three traders produced almost half the volume. I rebuilt the mechanics around consistency instead of leaderboard size. Headline volume dropped to a third — and every dollar traded produced 41% more fee revenue.</p>
+      <div class="fstats">
+        <div><div class="n">+41%</div><div class="l">Fee revenue per dollar traded</div></div>
+        <div><div class="n">6.3→8.2%</div><div class="l">Registered to futures trader</div></div>
+        <div><div class="n">4.4×</div><div class="l">Net deposits per unit of fee</div></div>
+        <div><div class="n">28</div><div class="l">Countries, three languages</div></div>
+      </div>
+      <div class="acts">
+        <a class="btn orange" href="campaigns.html">Read the case</a>
+        <a class="btn outline" href="hip3_dashboard_live.html">See the live dashboard</a>
       </div>
     </div>
   </div>
@@ -155,7 +211,7 @@ footer p{margin:0;font-family:var(--font-mono);font-size:12px;text-transform:upp
     <div class="screen">
       <iframe src="hip3_dashboard_live.html" title="HIP-3 market share on Hyperliquid, live" loading="lazy"></iframe>
     </div>
-    <p class="cap">Live: HIP-3 volume by deployer on Hyperliquid, from my own daily pipeline. <a class="slide-underline" href="hip3_dashboard_live.html" target="_blank" rel="noreferrer">Open full dashboard</a></p>
+    <p class="cap">Technical proof, running live: HIP-3 volume by deployer on Hyperliquid, from a pipeline I built and automated. <a class="slide-underline" href="hip3_dashboard_live.html" target="_blank" rel="noreferrer">Open full dashboard</a></p>
   </div>
 </section>
 
@@ -165,7 +221,7 @@ footer p{margin:0;font-family:var(--font-mono);font-size:12px;text-transform:upp
     <p class="label">About</p>
     <p>I'm Brenda, from Buenos Aires. I work on growth and business development for Web3 products: campaigns, affiliate and referral programs, KOLs and partners, with the goal of volume you can point to on-chain.</p>
     <p>I started in audiovisual communication and packaging design, moved into crypto seven years ago, and spent the last years in growth and online operations at exchanges. Along the way I picked up the habit of building my own tools when the data I need doesn't exist yet.</p>
-    <p>Right now: BD at Markets by Kinetiq, running DeSci LATAM, and learning to treat every campaign as something that has to show up in a dashboard.</p>
+    <p>Right now: BD at Markets by Kinetiq, and treating every campaign as something that has to show up in a dashboard. On the side I run DeSci LATAM, the Spanish-speaking community for decentralized science, and co-lead the DeSci Hub proposal with partners in Asia and India.</p>
   </div>
 </section>
 
@@ -182,10 +238,74 @@ footer p{margin:0;font-family:var(--font-mono);font-size:12px;text-transform:upp
   </div>
 </section>
 
+<section class="block" id="experience">
+  <div class="cut" aria-hidden="true"></div>
+  <div class="wrap inner">
+    <p class="label">Experience</p>
+    <div class="exp">
+
+      <article class="role">
+        <div><span class="when">2026 — now</span><h3>Growth &amp; Business Development</h3><span class="org">Markets by Kinetiq</span></div>
+        <div>
+          <p>Partner and KOL sourcing for LATAM at a HIP-3 perps deployer on Hyperliquid, plus the data pipeline that tracks deployer volume and market share daily.</p>
+          <ul class="strip"><li>HIP-3 market tracking, live</li><li>LATAM partner pipeline</li></ul>
+          <a class="more slide-underline" href="hip3_dashboard_live.html">See the live dashboard</a>
+        </div>
+      </article>
+
+      <article class="role">
+        <div><span class="when">until 2026</span><h3>Online Operations, Growth</h3><span class="org">MEXC</span></div>
+        <div>
+          <p>Designed and ran futures trading campaigns across LATAM, Spain and Portugal in three languages. Rebuilt the prize mechanics around consistency instead of leaderboard size, which raised fee revenue per dollar traded and pulled mid-tier traders through the funnel.</p>
+          <ul class="strip"><li>3 flagship campaigns</li><li>3 languages</li><li>28 countries</li><li>41% more fee per dollar traded</li></ul>
+          <a class="more slide-underline" href="campaigns.html">See the campaign breakdown</a>
+        </div>
+      </article>
+
+      <article class="role">
+        <div><h3>KuCoin</h3></div>
+        <div><p>Growth and operations for the Spanish-speaking market.</p></div>
+      </article>
+
+      <article class="role">
+        <div><h3>SatoshiTango</h3></div>
+        <div><p>Where it started: operations at an Argentine exchange.</p></div>
+      </article>
+
+    </div>
+
+    <div class="collab">
+      <p class="k">Previously / collaborated with</p>
+      <ul>
+        <li>HTX</li><li>Axelar Network</li><li>Colledge</li><li>8-BIT</li>
+        <li>DeSci World</li><li>DeSci Asia</li><li>MesoReefDAO</li>
+      </ul>
+      <p class="ev">On the circuit: <b>Devcon Bangkok</b> · <b>DevConnect</b></p>
+    </div>
+  </div>
+</section>
+
 <section class="block" id="work">
   <div class="cut" aria-hidden="true"></div>
   <div class="wrap inner">
     <p class="label">Work</p>
+
+    <article class="item">
+      <div>
+        <h3>Campaign mechanics: what actually moved the curve</h3>
+        <span class="badge">Completed</span><span class="type">Dashboard</span>
+      </div>
+      <div class="item-body">
+        <dl class="field"><dt>Problem</dt><dd>Futures prize campaigns were paying out to whoever topped the leaderboard. In one campaign the top 1% of traders — three people — produced almost half the volume, so the prize budget kept landing on the same accounts and bought headline volume that barely converted into revenue.</dd></dl>
+        <dl class="field"><dt>What I did</dt><dd><ul>
+          <li>Analysed participant-level results and found the concentration: the top 5% generated nearly all the volume.</li>
+          <li>Redesigned the next campaign around a consistency tier — small equal prizes for trading a modest minimum three days a week — and a prize pool that unlocked in small steps as monthly volume grew.</li>
+          <li>Kept eligibility tied to fee-generating volume only, excluding zero-fee and stablecoin pairs.</li>
+        </ul></dd></dl>
+        <dl class="field"><dt>Result</dt><dd class="strong">On a third of the headline volume, the redesigned campaign produced 41% more fee revenue per dollar traded and moved registered-to-trader conversion from 6.3% to 8.2%.</dd></dl>
+        <dl class="field"><dt>Link</dt><dd><a class="slide-underline" href="campaigns.html">Open the breakdown</a></dd></dl>
+      </div>
+    </article>
 
     <article class="item">
       <div>
@@ -220,21 +340,7 @@ footer p{margin:0;font-family:var(--font-mono);font-size:12px;text-transform:upp
       </div>
     </article>
 
-    <article class="item">
-      <div>
-        <h3>DeSci LATAM and the DeSci Hub proposal</h3>
-        <span class="badge">Live</span><span class="type">Community</span>
-      </div>
-      <div class="item-body">
-        <dl class="field"><dt>Problem</dt><dd>Decentralized science had almost no Spanish-speaking community and no shared home for regional builders.</dd></dl>
-        <dl class="field"><dt>What I did</dt><dd><ul>
-          <li>Run DeSci LATAM: community, events and coordination with DeSci Asia, DeSci India and DeSciWorld.</li>
-          <li>Co-lead the DeSci Hub proposal with partners across regions.</li>
-        </ul></dd></dl>
-        <dl class="field"><dt>Result</dt><dd class="strong">Result pending — member and event counts to be added.</dd></dl>
-        <dl class="field"><dt>Link</dt><dd><a class="slide-underline" href="https://x.com/GordaBitcoin" target="_blank" rel="noreferrer">Follow along on X</a></dd></dl>
-      </div>
-    </article>
+    
   </div>
 </section>
 
@@ -242,7 +348,7 @@ footer p{margin:0;font-family:var(--font-mono);font-size:12px;text-transform:upp
   <div class="cut" aria-hidden="true"></div>
   <div class="wrap inner">
     <p class="label">Contact</p>
-    <p>If you're building something in Web3 that needs growth with numbers behind it, write me. Mate is on me if you're in Buenos Aires.</p>
+    <p>If you're building something in Web3 that needs growth with numbers behind it, write me. Fastest way is a DM on X. Mate is on me if you're in Buenos Aires.</p>
     <div class="links">
       <a class="slide-underline" href="https://www.linkedin.com/in/bpalav/" target="_blank" rel="noreferrer">LinkedIn</a>
       <a class="slide-underline" href="https://github.com/BrenPalav" target="_blank" rel="noreferrer">GitHub</a>
