@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Campaign mechanics: what moved the curve</title>
+<meta name="description" content="How redesigning futures campaign mechanics traded headline volume for fee-generating volume.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="chart.umd.js"></script>
+<style>
+:root{
+  --background:#0C0C0D; --surface:#141415; --foreground:#F3F3F1;
+  --muted-foreground:#A8A8A4; --caption:#767660; --tick:#D6D6D2;
+  --accent:#F7951D; --accent-dark:#C46F0E; --accent-foreground:#0C0C0D;
+  --border:#28282A; --grid:#2E2E31; --cool:#6E8FC9; --cool-2:#7FB49C;
+  --font-sans:"Space Grotesk","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+html[data-theme="light"]{
+  --background:#F3F5F2; --surface:#FFF; --foreground:#17201C; --muted-foreground:#4E5A54;
+  --caption:#8A948E; --tick:#3C4742; --accent:#C46F0E; --border:#DCE1DD; --grid:#E6E9E6;
+  --cool:#2E4A7D; --cool-2:#5F8F7A;
+}
+*{box-sizing:border-box}
+html{-webkit-font-smoothing:antialiased}
+html,body{margin:0;background:var(--background);color:var(--foreground);font-family:var(--font-sans);font-size:16px;line-height:1.45}
+::selection{background:var(--accent);color:var(--accent-foreground)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto;padding:36px 20px 56px;overflow-x:hidden}
+@media (min-width:768px){.wrap{padding:44px 32px 64px}}
+header{position:relative;overflow:hidden;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;border-bottom:2px solid var(--accent);padding-bottom:22px}
+.streak{pointer-events:none;position:absolute;left:0;top:0;height:1px;width:320px;transform-origin:top left;transform:rotate(18deg);background:var(--accent);opacity:.3}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin:0 0 12px}
+h1{font-size:clamp(28px,4.4vw,48px);line-height:1.04;letter-spacing:-.03em;font-weight:700;margin:0 0 14px;max-width:17ch}
+.lede{font-size:17px;color:var(--muted-foreground);max-width:64ch;margin:0}
+.by{text-align:right;color:var(--muted-foreground);font-family:var(--font-mono);font-size:13px;line-height:1.6}
+.by strong{color:var(--foreground);display:block;font-family:var(--font-sans);font-size:17px;font-weight:700;letter-spacing:-.02em;text-transform:none}
+.theme{display:inline-flex;align-items:center;gap:8px;margin-top:12px;border:1px solid var(--border);padding:7px 12px;background:transparent;color:var(--muted-foreground);font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.12em;cursor:pointer}
+.theme:hover{border-color:var(--accent);color:var(--accent)}
+.theme .dot{width:12px;height:12px;border-radius:50%;background:linear-gradient(90deg,currentColor 50%,transparent 50%);border:1px solid currentColor}
+html.embedded .theme{display:none}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--border)}
+.kpi{padding:26px 18px 24px 0;border-right:1px solid var(--border)}
+.kpi+.kpi{padding-left:18px}
+.kpi:last-child{border-right:0}
+.kpi .n{font-size:clamp(26px,3vw,38px);font-weight:700;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
+.kpi .l{color:var(--muted-foreground);font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;margin-top:12px;line-height:1.5}
+.kpi.hi .n{color:var(--accent)}
+section{padding:48px 0 4px}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin:0 0 8px}
+.num{font-family:var(--font-mono);font-size:12px;color:var(--accent);letter-spacing:.12em}
+h2{font-size:22px;letter-spacing:-.025em;margin:0;font-weight:700}
+.sub{color:var(--muted-foreground);margin:0 0 20px;max-width:70ch;font-size:15px}
+.card{background:var(--surface);border:1px solid var(--border);border-top:2px solid var(--accent);padding:18px 16px 10px}
+.chart{position:relative;height:340px}
+.chart.sm{height:290px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:36px}
+.callout{border-left:2px solid var(--accent);padding:6px 0 6px 18px;margin:20px 0 0;color:var(--muted-foreground);font-size:15px;max-width:66ch}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted-foreground);margin:0 0 14px}
+.legend i{display:inline-block;width:10px;height:10px;margin-right:7px}
+.funnel{list-style:none;margin:0;padding:0}
+.funnel li{display:grid;grid-template-columns:150px minmax(0,1fr) 64px;align-items:center;gap:14px;padding:11px 0;border-bottom:1px solid var(--border);font-family:var(--font-mono);font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted-foreground)}
+.funnel li:last-child{border-bottom:0}
+.funnel .track{display:block;width:100%}
+.funnel .bar{display:block;height:14px;background:var(--cool);min-width:2px}
+.funnel li.hi .bar{background:var(--accent)}
+.funnel .pc{text-align:right;color:var(--foreground);font-variant-numeric:tabular-nums}
+footer{position:relative;overflow:hidden;margin-top:52px;padding-top:20px;border-top:1px solid var(--border);color:var(--caption);font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;display:flex;flex-wrap:wrap;gap:8px 28px;line-height:1.7}
+footer .streak{width:96px;transform:rotate(16deg);opacity:.5}
+@media (max-width:860px){
+  .wrap{padding:26px 18px 44px}
+  header{grid-template-columns:1fr;gap:14px;align-items:start}.by{text-align:left}
+  h1{max-width:none}
+  .kpis{grid-template-columns:1fr 1fr}
+  .kpi{padding:18px 14px 16px 0}.kpi:nth-child(2n){border-right:0;padding-left:14px}
+  .kpi:nth-child(-n+2){border-bottom:1px solid var(--border)}
+  .two{grid-template-columns:1fr;gap:30px}
+  .chart{height:260px}.chart.sm{height:240px}
+  .funnel li{grid-template-columns:110px 1fr 56px;gap:10px;font-size:11px}
+  .streak{width:200px}
+}
+@media (max-width:560px){.kpis{grid-template-columns:1fr}.kpi{border-right:0;border-bottom:1px solid var(--border);padding:16px 0}.kpi+.kpi{padding-left:0}.kpi:last-child{border-bottom:0}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="streak" aria-hidden="true"></div>
+  <div>
+    <p class="eyebrow">Futures campaigns · LATAM &amp; Iberia · 2025</p>
+    <h1>Campaign mechanics: what actually moved the curve</h1>
+    <p class="lede">Two month-long futures trading campaigns, three languages, 28 countries. The second one was redesigned to reward consistency instead of size — and generated more fee revenue per dollar traded, on a third of the headline volume.</p>
+  </div>
+  <div class="by"><strong>Gorda Bitcoin</strong>Growth &amp; Online Operations<br>Campaign design &amp; LATAM rollout
+  <br><button class="theme" id="themeBtn" type="button" aria-pressed="false"><span class="dot"></span><span>Light mode</span></button></div>
+</header>
+
+<div class="kpis">
+  <div class="kpi hi"><div class="n">+41%</div><div class="l">Fee revenue per dollar traded, campaign 2 vs 1</div></div>
+  <div class="kpi"><div class="n">6.3&nbsp;→&nbsp;8.2%</div><div class="l">Registered users converted to futures traders</div></div>
+  <div class="kpi"><div class="n">91 / 98%</div><div class="l">LATAM share of volume vs of net fee, campaign 1</div></div>
+  <div class="kpi"><div class="n">4.4×</div><div class="l">Net deposits attracted per unit of net fee</div></div>
+</div>
+<p class="sub" style="margin-top:14px;font-family:var(--font-mono);font-size:12px;color:var(--caption)">All figures shown as ratios and indices. No absolute business values are published.</p>
+
+<section>
+  <div class="sec-head"><span class="num">01</span><h2>Prize money went to three people</h2></div>
+  <p class="sub">Share of total trading volume by participant percentile, campaign 1. The top 1% of traders — three people — produced almost half the volume; the top 5% produced nearly all of it. A prize table built around the leaderboard was, in practice, paying the same handful of accounts every week.</p>
+  <div class="card"><div class="chart"><canvas id="cLorenz" role="img" aria-label="Cumulative share of volume by participant percentile"></canvas></div></div>
+  <p class="callout">Whales trade at lower effective fee rates and rarely deposit new funds. Concentration at this level means the campaign was buying headline volume that barely converted into revenue.</p>
+</section>
+
+<section class="two">
+  <div>
+    <div class="sec-head"><span class="num">02</span><h2>The redesign</h2></div>
+    <p class="sub">Campaign 2 kept the leaderboard but added a consistency tier — small equal prizes for anyone trading a modest minimum three days a week — and unlocked the pool in small steps as monthly volume grew, so the next milestone always looked reachable.</p>
+    <div class="legend"><span><i style="background:var(--cool)"></i>Campaign 1</span><span><i style="background:var(--accent)"></i>Campaign 2</span></div>
+    <div class="card"><div class="chart sm"><canvas id="cCompare" role="img" aria-label="Indexed comparison of the two campaigns"></canvas></div></div>
+  </div>
+  <div>
+    <div class="sec-head"><span class="num">03</span><h2>Registration to trader</h2></div>
+    <p class="sub">Campaign 2 funnel, as a share of registered users. The consistency tier gave mid-tier users a reason to complete the steps rather than drop out once the leaderboard looked unreachable.</p>
+    <ul class="funnel" id="funnel"></ul>
+    <p class="callout" style="margin-top:22px">Deposits are the hard part: this campaign pulled in net deposits worth several times the fee revenue it generated.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head"><span class="num">04</span><h2>Where the traders were</h2></div>
+  <p class="sub">Active traders by country, campaign 1. Run in Spanish, Portuguese and English across LATAM plus Spain and Portugal, which is why Brazil and Portugal sit alongside the Spanish-speaking markets.</p>
+  <div class="card"><div class="chart sm"><canvas id="cCountry" role="img" aria-label="Active traders by country"></canvas></div></div>
+</section>
+
+<footer>
+  <div class="streak" aria-hidden="true"></div>
+  <span>Campaign 1: ETH futures, August 2025. Campaign 2: SOL futures, September 2025.</span>
+  <span>Indices computed from final campaign reports; absolute volume, fee and deposit values withheld.</span>
+</footer>
+</div>
+
+<script>
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const EMBED=window.self!==window.top; if(EMBED) document.documentElement.classList.add('embedded');
+const LORENZ=[[0, 0.0], [1, 48.13], [2, 63.37], [3, 77.07], [4, 82.21], [5, 86.6], [6, 88.67], [7, 90.95], [8, 91.98], [9, 93.33], [10, 93.93], [11, 94.71], [12, 95.13], [13, 95.67], [14, 95.96], [15, 96.38], [16, 96.65], [17, 97.01], [18, 97.22], [19, 97.52], [20, 97.7], [21, 97.95], [22, 98.09], [23, 98.3], [24, 98.41], [25, 98.57], [26, 98.66], [27, 98.8], [28, 98.89], [29, 99.0], [30, 99.08], [31, 99.18], [32, 99.24], [33, 99.33], [34, 99.37], [35, 99.43], [36, 99.47], [37, 99.52], [38, 99.55], [39, 99.59], [40, 99.61], [41, 99.65], [42, 99.67], [43, 99.71], [44, 99.73], [45, 99.75], [46, 99.77], [47, 99.8], [48, 99.81], [49, 99.83], [50, 99.85], [51, 99.86], [52, 99.88], [53, 99.89], [54, 99.9], [55, 99.91], [56, 99.92], [57, 99.93], [58, 99.94], [59, 99.94], [60, 99.95], [61, 99.95], [62, 99.96], [63, 99.96], [64, 99.97], [65, 99.97], [66, 99.97], [67, 99.97], [68, 99.98], [69, 99.98], [70, 99.98], [71, 99.98], [72, 99.98], [73, 99.99], [74, 99.99], [75, 99.99], [76, 99.99], [77, 99.99], [78, 99.99], [79, 99.99], [80, 99.99], [81, 99.99], [82, 100.0], [83, 100.0], [84, 100.0], [85, 100.0], [86, 100.0], [87, 100.0], [88, 100.0], [89, 100.0], [90, 100.0], [91, 100.0], [92, 100.0], [93, 100.0], [94, 100.0], [95, 100.0], [96, 100.0], [97, 100.0], [98, 100.0], [99, 100.0], [100, 100.0]], COUNTRY=[["Brazil", 56], ["Mexico", 43], ["Argentina", 30], ["Portugal", 30], ["Colombia", 27], ["Peru", 15], ["Venezuela", 5], ["Dominican Rep.", 5], ["Trinidad & Tobago", 4]];
+const charts=[];
+Chart.defaults.font.family=css('--font-mono');
+Chart.defaults.font.size=window.innerWidth<760?10:11;
+Chart.defaults.color=css('--tick');
+Chart.defaults.borderColor=css('--grid');
+const tip=()=>({backgroundColor:css('--surface'),titleColor:css('--foreground'),bodyColor:css('--tick'),borderColor:css('--accent'),borderWidth:1,cornerRadius:0,padding:10});
+
+charts.push(new Chart(document.getElementById('cLorenz'),{type:'line',
+ data:{labels:LORENZ.map(p=>p[0]),datasets:[
+  {label:'Share of volume',data:LORENZ.map(p=>p[1]),borderColor:css('--accent'),backgroundColor:css('--accent')+'33',fill:true,borderWidth:2,pointRadius:0,tension:.2},
+  {label:'If volume were evenly spread',data:LORENZ.map(p=>p[0]),borderColor:css('--cool'),borderDash:[5,4],borderWidth:1,pointRadius:0,fill:false}]},
+ options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+  plugins:{legend:{display:false},tooltip:{...tip(),callbacks:{title:i=>'Top '+i[0].label+'% of traders',label:c=>c.dataset.label+': '+c.parsed.y.toFixed(1)+'%'}}},
+  scales:{x:{grid:{display:false},title:{display:true,text:'Traders, ranked by volume (percentile)',color:css('--muted-foreground')},ticks:{callback:(v,i)=>i%10===0?LORENZ[i][0]+'%':'',maxRotation:0}},
+   y:{grid:{color:css('--grid')},max:100,ticks:{callback:v=>v+'%'},title:{display:true,text:'Cumulative share of volume',color:css('--muted-foreground')}}}}}));
+
+charts.push(new Chart(document.getElementById('cCompare'),{type:'bar',
+ data:{labels:['Headline volume','Fee per dollar traded','Registered → trader'],datasets:[
+  {label:'Campaign 1',data:[100,100,100],backgroundColor:css('--cool')},
+  {label:'Campaign 2',data:[26,141,129],backgroundColor:css('--accent')}]},
+ options:{responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{display:false},tooltip:{...tip(),callbacks:{label:c=>c.dataset.label+': index '+c.parsed.y}}},
+  scales:{x:{grid:{display:false},ticks:{maxRotation:0,autoSkip:false,callback:function(v){const s=this.getLabelForValue(v);return s.length>16?s.split(' '):s}}},
+   y:{grid:{color:css('--grid')},title:{display:true,text:'Index, campaign 1 = 100',color:css('--muted-foreground')}}}}}));
+
+const F=[['Registered',100,0],['KYC completed',8.8,0],['First deposit',6.3,0],['First trade',6.6,0],['Futures trader',8.2,1]];
+document.getElementById('funnel').innerHTML=F.map(([l,p,hi])=>
+ `<li class="${hi?'hi':''}"><span>${l}</span><span class="track"><span class="bar" style="width:${p}%"></span></span><span class="pc">${p}%</span></li>`).join('');
+
+charts.push(new Chart(document.getElementById('cCountry'),{type:'bar',
+ data:{labels:COUNTRY.map(c=>c[0]),datasets:[{label:'Active traders',data:COUNTRY.map(c=>c[1]),backgroundColor:COUNTRY.map((c,i)=>i<5?css('--accent'):css('--cool'))}]},
+ options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+  plugins:{legend:{display:false},tooltip:{...tip(),callbacks:{label:c=>c.parsed.x+' active traders'}}},
+  scales:{x:{grid:{color:css('--grid')},title:{display:true,text:'Active traders',color:css('--muted-foreground')}},y:{grid:{display:false}}}}}));
+
+function applyTheme(light){document.documentElement.dataset.theme=light?'light':'';
+ const b=document.getElementById('themeBtn');b.setAttribute('aria-pressed',light);b.lastElementChild.textContent=light?'Dark mode':'Light mode';
+ Chart.defaults.color=css('--tick');Chart.defaults.borderColor=css('--grid');
+ charts.forEach(c=>{c.options.scales&&Object.values(c.options.scales).forEach(s=>{if(s.grid&&s.grid.color)s.grid.color=css('--grid');if(s.title)s.title.color=css('--muted-foreground');});c.update('none');});}
+document.getElementById('themeBtn').addEventListener('click',()=>applyTheme(document.documentElement.dataset.theme!=='light'));
+</script>
+</body>
+</html>
