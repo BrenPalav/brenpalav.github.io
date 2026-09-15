@@ -4,58 +4,84 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>HIP-3 on Hyperliquid: who moves the volume</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js">}
-</script>
+<script src="chart.umd.js"></script>
 <style>
   :root{
-    --paper:#F3F5F2; --ink:#17201C; --ink-2:#4E5A54; --ink-3:#8A948E; --rule:#D8DDD9;
+    --paper:#F3F5F2; --surface:#FFFFFF; --ink:#17201C; --ink-2:#4E5A54; --ink-3:#8A948E; --rule:#DCE1DD; --rule-2:#EEF1EE;
     --xyz:#2E4A7D; --io:#5F8F7A; --para:#B6BDB8; --mk:#E4571E; --mk-soft:#FBE3D8;
     --us500:#E4571E; --ustech:#F0A070; --small:#8C5A3C; --bond:#C9B8AE;
+    --grid:#E6E9E6;
+  }
+  html[data-theme="dark"]{
+    --paper:#111614; --surface:#171D1A; --ink:#EEF1EE; --ink-2:#AEB7B2; --ink-3:#7C857F; --rule:#2A322E; --rule-2:#1F2623;
+    --xyz:#6E8FC9; --io:#7FB49C; --para:#6F7772; --mk:#FF6B33; --mk-soft:#3A2419;
+    --ustech:#F5B48C; --small:#B07A58; --bond:#8C7F76; --grid:#232B27;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;background:var(--paper);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:16px;line-height:1.45}
+  html,body{margin:0;background:var(--paper);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:16px;line-height:1.45;-webkit-font-smoothing:antialiased}
+  body{transition:background .2s,color .2s}
   .wrap{max-width:1080px;margin:0 auto;padding:40px 24px 64px}
-  header{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;border-bottom:2px solid var(--ink);padding-bottom:20px}
-  h1{font-size:clamp(28px,4.2vw,44px);line-height:1.05;letter-spacing:-.02em;font-weight:700;margin:0 0 10px;max-width:16ch}
-  .lede{font-size:17px;color:var(--ink-2);max-width:62ch;margin:0}
+  header{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;border-bottom:2px solid var(--ink);padding-bottom:22px}
+  .eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mk);margin:0 0 10px;font-weight:700}
+  h1{font-size:clamp(28px,4.2vw,46px);line-height:1.02;letter-spacing:-.025em;font-weight:700;margin:0 0 12px;max-width:16ch}
+  .lede{font-size:17px;color:var(--ink-2);max-width:60ch;margin:0}
   .by{text-align:right;color:var(--ink-2);font-size:14px;line-height:1.5}
   .by strong{color:var(--ink);display:block;font-size:16px}
-  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-bottom:1px solid var(--rule)}
-  .kpi{padding:22px 0 20px;border-right:1px solid var(--rule);padding-right:20px}
+  .theme{display:inline-flex;align-items:center;gap:8px;margin-top:10px;border:1px solid var(--rule);border-radius:999px;padding:5px 10px 5px 8px;background:var(--surface);color:var(--ink-2);font:inherit;font-size:13px;cursor:pointer}
+  .theme:hover{border-color:var(--ink)}
+  .theme:focus-visible{outline:2px solid var(--mk);outline-offset:2px}
+  .theme .dot{width:14px;height:14px;border-radius:50%;background:linear-gradient(90deg,var(--ink) 50%,var(--paper) 50%);border:1px solid var(--ink)}
+  html.embedded .theme{display:none}
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--rule)}
+  .kpi{padding:24px 20px 22px 0;border-right:1px solid var(--rule)}
   .kpi+.kpi{padding-left:20px}
   .kpi:last-child{border-right:0}
-  .kpi .n{font-size:clamp(28px,3.4vw,40px);font-weight:700;letter-spacing:-.02em;line-height:1}
-  .kpi .l{color:var(--ink-2);font-size:14px;margin-top:8px}
+  .kpi .n{font-size:clamp(30px,3.6vw,44px);font-weight:700;letter-spacing:-.03em;line-height:1;font-variant-numeric:tabular-nums}
+  .kpi .l{color:var(--ink-2);font-size:14px;margin-top:10px;line-height:1.35}
   .kpi.mk .n{color:var(--mk)}
-  section{padding:36px 0 8px}
-  h2{font-size:22px;letter-spacing:-.01em;margin:0 0 6px;font-weight:700}
-  .sub{color:var(--ink-2);margin:0 0 18px;max-width:70ch;font-size:15px}
-  .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 14px}
-  .seg{display:inline-flex;border:1px solid var(--ink);border-radius:999px;overflow:hidden}
-  .seg button{background:transparent;border:0;padding:7px 14px;font:inherit;font-size:14px;color:var(--ink);cursor:pointer}
+  .note{margin:12px 0 0;font-size:13px;color:var(--ink-3)}
+  section{padding:44px 0 4px}
+  .sec-head{display:flex;align-items:baseline;gap:12px;margin:0 0 6px}
+  .num{font-size:12px;color:var(--mk);font-weight:700;letter-spacing:.08em}
+  h2{font-size:22px;letter-spacing:-.015em;margin:0;font-weight:700}
+  .sub{color:var(--ink-2);margin:0 0 18px;max-width:68ch;font-size:15px}
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 14px}
+  .seg{display:inline-flex;border:1px solid var(--ink);border-radius:999px;overflow:hidden;background:var(--surface)}
+  .seg button{background:transparent;border:0;padding:9px 16px;font:inherit;font-size:14px;color:var(--ink);cursor:pointer;min-height:40px}
   .seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
   .seg button:focus-visible{outline:2px solid var(--mk);outline-offset:-2px}
-  select{font:inherit;font-size:14px;padding:7px 10px;border:1px solid var(--ink);border-radius:8px;background:#fff;color:var(--ink)}
-  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--ink-2);margin:0 0 10px}
-  .legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+  label.lbl{font-size:14px;color:var(--ink-2)}
+  select{font:inherit;font-size:14px;padding:8px 32px 8px 12px;border:1px solid var(--ink);border-radius:999px;background:var(--surface);color:var(--ink);min-height:40px;appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--ink) 50%),linear-gradient(135deg,var(--ink) 50%,transparent 50%);background-position:calc(100% - 17px) 50%,calc(100% - 12px) 50%;background-size:5px 5px;background-repeat:no-repeat}
+  .legend{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13px;color:var(--ink-2);margin:0 0 12px}
+  .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+  .card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:16px 16px 10px}
   .chart{position:relative;height:340px}
   .chart.sm{height:300px}
   .two{display:grid;grid-template-columns:1fr 1fr;gap:32px}
   .callout{border-left:3px solid var(--mk);padding:6px 0 6px 16px;margin:18px 0 0;color:var(--ink-2);font-size:15px;max-width:62ch}
-  table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
-  th{text-align:left;font-weight:600;color:var(--ink-2);border-bottom:1px solid var(--ink);padding:8px 6px}
-  td{padding:7px 6px;border-bottom:1px solid var(--rule);vertical-align:middle}
+  .tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -24px;padding:0 24px}
+  table{width:100%;min-width:560px;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+  th{text-align:left;font-weight:600;color:var(--ink-2);border-bottom:1px solid var(--ink);padding:8px 6px;white-space:nowrap}
+  td{padding:9px 6px;border-bottom:1px solid var(--rule-2);vertical-align:middle;white-space:nowrap}
   td.num,th.num{text-align:right}
-  td .bar{display:block;height:6px;background:var(--xyz);border-radius:3px;margin-top:4px}
+  td .bar{display:block;height:6px;background:var(--xyz);border-radius:3px;margin-top:5px;margin-left:auto}
   tr.mk td{background:var(--mk-soft)}
   tr.mk td .bar{background:var(--mk)}
   .rank{color:var(--ink-3);width:2.2em}
   footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--rule);color:var(--ink-2);font-size:13px;display:flex;flex-wrap:wrap;gap:6px 28px}
-  footer a{color:var(--ink)}
+  code{font-size:.92em;background:var(--rule-2);padding:1px 5px;border-radius:4px}
   @media (max-width:760px){
-    header{grid-template-columns:1fr}.by{text-align:left}
+    .wrap{padding:28px 18px 48px}
+    header{grid-template-columns:1fr;gap:14px;align-items:start}.by{text-align:left}
+    h1{max-width:none}
     .kpis{grid-template-columns:1fr}.kpi{border-right:0;border-bottom:1px solid var(--rule);padding:16px 0}.kpi+.kpi{padding-left:0}.kpi:last-child{border-bottom:0}
-    .two{grid-template-columns:1fr}
+    .kpi .n{font-size:34px}
+    section{padding:36px 0 4px}
+    .two{grid-template-columns:1fr;gap:28px}
+    .card{padding:12px 10px 6px;border-radius:12px}
+    .chart{height:260px}.chart.sm{height:240px}
+    .tablewrap{margin:0 -18px;padding:0 18px}
+    .toolbar{gap:8px}
   }
   @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
@@ -64,17 +90,18 @@
 <div class="wrap">
 <header>
   <div>
+    <p class="eyebrow">Hyperliquid · HIP-3 · daily</p>
     <h1>HIP-3 on Hyperliquid: who moves the volume</h1>
     <p class="lede">Stock, index and commodity perps on Hyperliquid are already a multi-billion-dollar-a-day market. One deployer has almost all of it; the rest compete for the margin. Daily tracking of every HIP-3 deployer from the public API.</p>
   </div>
-  <div class="by"><strong>Gorda Bitcoin</strong>Growth &amp; BD, Markets by Kinetiq<br>Data: Hyperliquid public API<br>Own pipeline on GitHub Actions</div>
+  <div class="by"><strong>Gorda Bitcoin</strong>Growth &amp; BD, Markets by Kinetiq<br>Data: Hyperliquid public API<br>Own pipeline on GitHub Actions<br><button class="theme" id="themeBtn" type="button" aria-pressed="false"><span class="dot"></span><span>Dark mode</span></button></div>
 </header>
 
 <div class="kpis" id="kpis"></div>
-<p class="sub" id="liveNote" style="margin:12px 0 0;font-size:13px;color:var(--ink-3)"></p>
+<p class="note" id="liveNote"></p>
 
 <section>
-  <h2>Market share by deployer</h2>
+  <div class="sec-head"><span class="num">01</span><h2>Market share by deployer</h2></div>
   <p class="sub">24h volume per deployer, one record a day. In absolute terms XYZ covers everything; in share you can see how the margin left for the others moves.</p>
   <div class="toolbar">
     <div class="seg" role="group" aria-label="Scale">
@@ -83,30 +110,30 @@
     </div>
   </div>
   <div class="legend" id="legDex"></div>
-  <div class="chart"><canvas id="cShare" role="img" aria-label="Stacked area of daily volume by deployer"></canvas></div>
+  <div class="card"><div class="chart"><canvas id="cShare" role="img" aria-label="Stacked area of daily volume by deployer"></canvas></div></div>
   <p class="callout" id="calloutShare"></p>
 </section>
 
 <section class="two">
   <div>
-    <h2>Markets by Kinetiq, by index</h2>
+    <div class="sec-head"><span class="num">02</span><h2>Markets by Kinetiq, by index</h2></div>
     <p class="sub">The deployer’s four live markets. Daily volume as bars, open interest as a line.</p>
     <div class="legend" id="legMk"></div>
-    <div class="chart sm"><canvas id="cMk" role="img" aria-label="Markets daily volume by index"></canvas></div>
+    <div class="card"><div class="chart sm"><canvas id="cMk" role="img" aria-label="Markets daily volume by index"></canvas></div></div>
   </div>
   <div>
-    <h2>Volume vs open interest</h2>
+    <div class="sec-head"><span class="num">03</span><h2>Volume vs open interest</h2></div>
     <p class="sub">Each dot is a market. Top left, position markets; bottom right, traffic markets.</p>
-    <div class="toolbar"><label for="dayScatter" style="font-size:14px;color:var(--ink-2)">Day</label><select id="dayScatter"></select></div>
-    <div class="chart sm"><canvas id="cScatter" role="img" aria-label="Scatter of volume vs open interest by market"></canvas></div>
+    <div class="toolbar"><label class="lbl" for="dayScatter">Day</label><select id="dayScatter"></select></div>
+    <div class="card"><div class="chart sm"><canvas id="cScatter" role="img" aria-label="Scatter of volume vs open interest by market"></canvas></div></div>
   </div>
 </section>
 
 <section>
-  <h2>Top 20 markets by volume</h2>
+  <div class="sec-head"><span class="num">04</span><h2>Top 20 markets by volume</h2></div>
   <p class="sub">Ranked by 24h volume. Markets by Kinetiq markets are highlighted.</p>
-  <div class="toolbar"><label for="dayTable" style="font-size:14px;color:var(--ink-2)">Day</label><select id="dayTable"></select></div>
-  <table id="tbl"><thead><tr><th class="rank">#</th><th>Market</th><th>Deployer</th><th class="num">24h volume</th><th class="num">Open interest</th></tr></thead><tbody></tbody></table>
+  <div class="toolbar"><label class="lbl" for="dayTable">Day</label><select id="dayTable"></select></div>
+  <div class="tablewrap"><table id="tbl"><thead><tr><th class="rank">#</th><th>Market</th><th>Deployer</th><th class="num">24h volume</th><th class="num">Open interest</th></tr></thead><tbody></tbody></table></div>
 </section>
 
 <footer>
@@ -159,7 +186,13 @@ async function loadData(){
   try { const r=await fetch(CSV_URL,{cache:'no-store'}); if(!r.ok) throw new Error(r.status); const t=await r.text(); const D=buildData(parseCSV(t)); if(D.days.length<2) throw new Error('pocos datos'); D.live=true; return D; }
   catch(e){ console.warn('CSV en vivo no disponible, usando snapshot', e); const D=buildData(Object.entries(SNAPSHOT.rows).flatMap(([date,rs])=>rs.map(r=>({date_utc:date,dex:r.dex,coin:r.coin,volume_24h_usd:r.v,open_interest_usd:r.oi})))); D.live=false; return D; }
 }
-loadData().then(D=>{ render(D); if (window.self!==window.top) setTimeout(()=>window.scrollTo(0,0),50); });
+const EMBED = window.self!==window.top; if (EMBED) document.documentElement.classList.add('embedded');
+const charts = [];
+function applyTheme(dark){ document.documentElement.dataset.theme = dark?'dark':''; const b=document.getElementById('themeBtn'); b.setAttribute('aria-pressed',dark); b.lastElementChild.textContent = dark?'Light mode':'Dark mode';
+  Chart.defaults.color = css('--ink-2'); Chart.defaults.borderColor = css('--grid'); charts.forEach(c=>{ c.options.scales && Object.values(c.options.scales).forEach(sc=>{ if(sc.grid) sc.grid.color=css('--grid'); }); c.update('none'); }); }
+document.getElementById('themeBtn').addEventListener('click',()=>applyTheme(document.documentElement.dataset.theme!=='dark'));
+const MOBILE = () => window.innerWidth < 760;
+loadData().then(D=>{ render(D); if (EMBED) setTimeout(()=>window.scrollTo(0,0),50); });
 
 function render(D){
 const isMk = d => d==='mkts'||d==='km';
@@ -176,7 +209,8 @@ const order = D.order;
 
 Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
 Chart.defaults.color = css('--ink-2');
-Chart.defaults.borderColor = css('--rule');
+Chart.defaults.borderColor = css('--grid');
+Chart.defaults.font.size = MOBILE()?11:12;
 
 // KPIs: use last weekday with full data (max total) and latest day
 const iMax = totals.indexOf(Math.max(...totals));
@@ -195,17 +229,17 @@ legend('legDex', order.slice().reverse().map(d=>[D.dexNames[d],C[d]]));
 // Share chart
 let pct=false;
 const mkShareDs = () => order.map(d=>({label:D.dexNames[d], data:D.byDex[d].map((v,i)=>pct? v/totals[i]*100 : v), borderColor:C[d], backgroundColor:C[d]+(isMk(d)?'':'CC'), fill:true, borderWidth:isMk(d)?2:1, pointRadius:3, pointHoverRadius:5, tension:.25}));
-const shareChart = new Chart(document.getElementById('cShare'),{type:'line',data:{labels,datasets:mkShareDs()},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+(pct?c.parsed.y.toFixed(2)+'%':fmt(c.parsed.y))}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:v=>pct?v+'%':fmt(v)},max:undefined}}}});
+const shareChart = charts[charts.length] = new Chart(document.getElementById('cShare'),{type:'line',data:{labels,datasets:mkShareDs()},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+(pct?c.parsed.y.toFixed(2)+'%':fmt(c.parsed.y))}}},scales:{x:{stacked:true,grid:{display:false},ticks:{maxRotation:0,autoSkip:true,maxTicksLimit:MOBILE()?4:8}},y:{stacked:true,grid:{color:css('--grid')},ticks:{callback:v=>pct?v+'%':fmt(v),maxTicksLimit:6},max:undefined}}}});
 const setMode = p => { pct=p; document.getElementById('btnAbs').setAttribute('aria-pressed',!p); document.getElementById('btnPct').setAttribute('aria-pressed',p); shareChart.data.datasets=mkShareDs(); shareChart.options.scales.y.max = p?100:undefined; shareChart.update(); };
 document.getElementById('btnAbs').onclick=()=>setMode(false);
 document.getElementById('btnPct').onclick=()=>setMode(true);
-document.getElementById('calloutShare').textContent = `${(()=>{const top=order[order.length-1]; const sh=D.byDex[top].map((v,i)=>v/totals[i]*100); const iHi=mkShare.indexOf(Math.max(...mkShare)); return `${D.dexNames[top]} holds between ${Math.min(...sh).toFixed(0)}% and ${Math.max(...sh).toFixed(0)}% of volume. When total volume drops (weekends), the small deployers’ share rises: on ${labels[iHi]} Markets reached ${mkShare[iHi].toFixed(2)}%.`})()};
+document.getElementById('calloutShare').textContent = `${(()=>{const top=order[order.length-1]; const sh=D.byDex[top].map((v,i)=>v/totals[i]*100); const iHi=mkShare.indexOf(Math.max(...mkShare)); return `${D.dexNames[top]} holds between ${Math.min(...sh).toFixed(0)}% and ${Math.max(...sh).toFixed(0)}% of volume. When total volume drops (weekends), the small deployers’ share rises: on ${labels[iHi]} Markets reached ${mkShare[iHi].toFixed(2)}%.`})()}`;
 
 // Markets by index
 const coins = Object.keys(D.mkVol);
 document.getElementById('liveNote').textContent = D.live ? `Updated with data through ${labels[iLast]}. Refreshes itself every time the page loads.` : `Showing a saved copy (through ${labels[iLast]}); the live sheet could not be read.`;
 legend('legMk', coins.map(c=>[c.replace('mkts:',''),CC[c]]).concat([['Total open interest',css('--ink')]]));
-new Chart(document.getElementById('cMk'),{data:{labels,datasets:[
+charts[charts.length] = new Chart(document.getElementById('cMk'),{data:{labels,datasets:[
   ...coins.map(c=>({type:'bar',label:c.replace('mkts:',''),data:D.mkVol[c],backgroundColor:CC[c],stack:'v',yAxisID:'y'})),
   {type:'line',label:'Total open interest',data:D.days.map((_,i)=>coins.reduce((s,c)=>s+D.mkOi[c][i],0)),borderColor:css('--ink'),borderWidth:2,pointRadius:3,yAxisID:'y2',tension:.25}
 ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y)}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:fmt},title:{display:true,text:'24h volume'}},y2:{position:'right',grid:{drawOnChartArea:false},ticks:{callback:fmt},title:{display:true,text:'Open interest'}}}}});
@@ -215,7 +249,7 @@ for (const id of ['dayScatter','dayTable']) { const s=document.getElementById(id
 
 // Scatter
 const scatterDs = i => { const rows=D.rows[D.days[i]].filter(r=>r.v>0&&r.oi>0); return order.map(d=>({label:D.dexNames[d],data:rows.filter(r=>r.dex===d).map(r=>({x:r.v,y:r.oi,coin:r.coin})),backgroundColor:isMk(d)?C[d]:C[d]+'99',borderColor:C[d],pointRadius:isMk(d)?7:4,pointHoverRadius:8})); };
-const scatter = new Chart(document.getElementById('cScatter'),{type:'scatter',data:{datasets:scatterDs(iMax)},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw.coin} — vol ${fmt(c.raw.x)}, OI ${fmt(c.raw.y)}`}}},scales:{x:{type:'logarithmic',title:{display:true,text:'24h volume (log)'},ticks:{callback:fmt}},y:{type:'logarithmic',title:{display:true,text:'Open interest (log)'},ticks:{callback:fmt}}}}});
+const scatter = charts[charts.length] = new Chart(document.getElementById('cScatter'),{type:'scatter',data:{datasets:scatterDs(iMax)},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw.coin} — vol ${fmt(c.raw.x)}, OI ${fmt(c.raw.y)}`}}},scales:{x:{type:'logarithmic',grid:{color:css('--grid')},title:{display:true,text:'24h volume (log)'},ticks:{callback:fmt,maxRotation:0,autoSkip:true,maxTicksLimit:MOBILE()?4:7}},y:{type:'logarithmic',grid:{color:css('--grid')},title:{display:!MOBILE(),text:'Open interest (log)'},ticks:{callback:fmt,maxTicksLimit:6}}}}});
 document.getElementById('dayScatter').onchange=e=>{scatter.data.datasets=scatterDs(+e.target.value);scatter.update();};
 
 // Table

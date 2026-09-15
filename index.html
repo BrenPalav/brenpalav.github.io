@@ -1,114 +1,263 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gorda Bitcoin — Web3 growth &amp; BD</title>
 <meta name="description" content="Design, build, AI and growth for Web3: campaigns, partners and volume that shows up on-chain.">
+<meta name="author" content="Gorda Bitcoin">
+<meta property="og:title" content="Gorda Bitcoin — Web3 growth &amp; BD">
+<meta property="og:description" content="Design, build, AI and growth for Web3: campaigns, partners and volume that shows up on-chain.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--paper:#F3F5F2;--ink:#17201C;--ink-2:#4E5A54;--ink-3:#8A948E;--rule:#D8DDD9;--accent:#E4571E}
-*{box-sizing:border-box}
-html,body{margin:0;background:var(--paper);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:17px;line-height:1.5}
-.wrap{max-width:1080px;margin:0 auto;padding:32px 24px 80px}
-nav{display:flex;justify-content:space-between;align-items:center;padding-bottom:24px;border-bottom:1px solid var(--rule)}
-nav a{color:var(--ink);text-decoration:none;margin-left:20px}
-nav a:hover,nav a:focus-visible{color:var(--accent)}
-.hero{padding:72px 0 48px}
-h1{font-size:clamp(32px,5vw,56px);line-height:1.05;letter-spacing:-.02em;margin:0 0 20px;max-width:18ch}
-.lede{font-size:19px;color:var(--ink-2);max-width:60ch;margin:0 0 28px}
-.btn{display:inline-block;background:var(--ink);color:var(--paper);padding:12px 20px;border-radius:999px;text-decoration:none;margin-right:10px}
-.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--ink)}
-.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.live{border:1px solid var(--rule);border-radius:12px;overflow:hidden;margin-top:40px}
-.live iframe{width:100%;height:720px;border:0;display:block}
-.live p{margin:0;padding:10px 14px;font-size:13px;color:var(--ink-3);border-top:1px solid var(--rule)}
-section{padding:64px 0 0}
-h2{font-size:26px;letter-spacing:-.01em;margin:0 0 24px}
-.about p{max-width:65ch;margin:0 0 14px}
-.caps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:28px 40px}
-.caps h3{font-size:17px;margin:0 0 6px}
-.caps p{margin:0;color:var(--ink-2);font-size:15px}
-.work{display:grid;gap:0}
-.item{display:grid;grid-template-columns:1fr 2fr;gap:24px 40px;padding:28px 0;border-top:1px solid var(--rule)}
-.item:last-child{border-bottom:1px solid var(--rule)}
-.item h3{margin:0 0 8px;font-size:20px}
-.badge{display:inline-block;border:1px solid var(--accent);color:var(--accent);border-radius:999px;padding:2px 10px;font-size:12px;margin-right:6px}
-.type{color:var(--ink-3);font-size:14px}
-.item dl{margin:0}
-.item dt{font-size:13px;color:var(--ink-3);margin-top:12px}
-.item dd{margin:2px 0 0}
-.item ul{margin:2px 0 0;padding-left:18px}
-.item a{color:var(--accent)}
-.contact p{max-width:60ch}
-.contact a{color:var(--ink);margin-right:20px}
-footer{margin-top:64px;padding-top:16px;border-top:1px solid var(--rule);color:var(--ink-3);font-size:13px}
-@media (max-width:700px){.item{grid-template-columns:1fr}.hero{padding:48px 0 32px}}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+:root{
+  --background:#0C0C0D; --foreground:#F3F3F1; --surface:#141415;
+  --muted-foreground:#A8A8A4; --caption:#767660;
+  --accent:#F7951D; --accent-dark:#C46F0E; --accent-foreground:#0C0C0D;
+  --border:#28282A;
+  --font-sans:"Space Grotesk","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --wrap:1120px;
+}
+*{box-sizing:border-box;border-color:var(--border)}
+html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{margin:0;background:var(--background);color:var(--foreground);font-family:var(--font-sans);font-size:17px;line-height:1.5}
+::selection{background:var(--accent);color:var(--accent-foreground)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+a{color:inherit}
+.wrap{max-width:var(--wrap);margin:0 auto;padding-left:20px;padding-right:20px}
+@media (min-width:768px){.wrap{padding-left:32px;padding-right:32px}}
+.mono{font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.12em}
+.slide-underline{background-image:linear-gradient(var(--accent),var(--accent));background-repeat:no-repeat;background-position:left bottom;background-size:0% 1px;padding-bottom:2px;transition:background-size 120ms ease;text-decoration:none}
+.slide-underline:hover{background-size:100% 1px}
+@media (prefers-reduced-motion:reduce){.slide-underline{transition:none}}
+
+/* nav */
+header.nav{border-bottom:2px solid var(--accent);background:var(--surface)}
+header.nav .wrap{display:flex;align-items:center;justify-content:space-between;padding-top:20px;padding-bottom:20px}
+.brand{font-size:18px;font-weight:700;letter-spacing:-.03em;text-decoration:none;color:var(--foreground)}
+nav ul{display:flex;align-items:center;gap:20px;list-style:none;margin:0;padding:0}
+@media (min-width:768px){nav ul{gap:32px}}
+nav a{font-family:var(--font-mono);font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted-foreground);transition:color .12s}
+nav a:hover{color:var(--accent)}
+
+/* section block with diagonal cut */
+.block{position:relative;border-top:1px solid var(--border);background:var(--background)}
+.block .cut{position:absolute;inset:0;background:var(--surface);clip-path:polygon(0 0,100% 0,100% calc(100% - 9vw),0 100%)}
+.block .inner{position:relative;padding-top:44px;padding-bottom:44px}
+@media (min-width:768px){.block .inner{padding-top:72px;padding-bottom:72px}}
+.label{font-family:var(--font-mono);font-size:14px;text-transform:uppercase;letter-spacing:.12em;color:var(--caption);margin:0 0 32px}
+@media (min-width:768px){.label{margin-bottom:48px}}
+
+/* hero */
+.hero-top{position:relative;overflow:hidden;background:var(--background)}
+.hero-top .cut{position:absolute;inset:0;background:var(--surface);clip-path:polygon(0 0,100% 0,100% calc(100% - 9vw),0 100%)}
+.streak{pointer-events:none;position:absolute;left:0;top:0;height:1px;width:380px;transform-origin:top left;transform:rotate(18deg);background:var(--accent);opacity:.3}
+.hero-inner{position:relative;padding-top:56px;padding-bottom:56px}
+@media (min-width:768px){.hero-inner{padding-top:96px;padding-bottom:80px}}
+h1{max-width:16ch;font-size:clamp(34px,5.5vw,64px);font-weight:700;line-height:1.05;letter-spacing:-.03em;margin:0}
+.rule{margin-top:32px;height:2px;width:100%;background:var(--accent)}
+.lede{margin:32px 0 0;max-width:68ch;color:var(--muted-foreground)}
+.cta{margin-top:40px;display:flex;flex-wrap:wrap;gap:16px}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 28px;font-family:var(--font-mono);font-size:14px;text-transform:uppercase;letter-spacing:.12em;text-decoration:none;border-radius:0;border:1px solid transparent;min-height:44px;transition:background-color .12s,color .12s,border-color .12s}
+.btn.orange{background:var(--accent);color:var(--accent-foreground)}
+.btn.orange:hover{background:var(--accent-dark)}
+.btn.outline{border-color:var(--foreground);color:var(--foreground)}
+.btn.outline:hover{border-color:var(--accent);color:var(--accent)}
+
+/* dashboard frame */
+.dash{padding-top:44px;padding-bottom:44px}
+@media (min-width:768px){.dash{padding-top:72px;padding-bottom:72px}}
+.screen{overflow:hidden;border-radius:12px;border:1px solid var(--border);border-top:2px solid var(--accent)}
+.screen iframe{display:block;width:100%;height:560px;border:0}
+@media (min-width:768px){.screen iframe{height:720px}}
+.cap{margin:12px 0 0;font-family:var(--font-mono);font-size:14px;letter-spacing:.02em;color:var(--caption)}
+.cap a{color:var(--accent)}
+
+/* about */
+.about p{max-width:68ch;color:var(--muted-foreground);margin:0 0 24px}
+.about p:last-child{margin-bottom:0}
+
+/* what I do */
+.caps{display:grid;grid-template-columns:1fr;gap:32px}
+@media (min-width:640px){.caps{grid-template-columns:1fr 1fr}}
+@media (min-width:1024px){.caps{grid-template-columns:repeat(4,1fr)}}
+.caps h3{margin:0 0 10px;font-size:18px;font-weight:700;letter-spacing:-.02em}
+.caps p{margin:0;color:var(--muted-foreground);font-size:15px}
+.caps .n{display:block;font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;color:var(--accent);margin-bottom:12px}
+
+/* work */
+.item{display:grid;grid-template-columns:1fr;gap:20px;padding:36px 0;border-top:1px solid var(--border)}
+@media (min-width:860px){.item{grid-template-columns:minmax(220px,1fr) 2fr;gap:48px}}
+.item:first-of-type{border-top:0;padding-top:0}
+.item h3{margin:0 0 14px;font-size:22px;font-weight:700;letter-spacing:-.02em;line-height:1.15}
+.badge{display:inline-block;border:1px solid var(--accent);color:var(--accent);font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.12em;padding:4px 10px;margin-right:10px}
+.type{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--caption)}
+.field{margin-top:20px}
+.item .item-body > .field:first-child{margin-top:0}
+.field dt{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--caption);margin-bottom:6px}
+.field dd{margin:0;color:var(--muted-foreground)}
+.field dd.strong{color:var(--foreground)}
+.field ul{margin:0;padding-left:20px;color:var(--muted-foreground)}
+.field ul li{margin-bottom:6px}
+.field a{color:var(--accent)}
+code{font-family:var(--font-mono);font-size:.9em;color:var(--foreground)}
+
+/* contact */
+.contact p{max-width:68ch;font-size:19px;color:var(--foreground);margin:0}
+@media (min-width:768px){.contact p{font-size:21px}}
+.contact .links{margin-top:32px;display:flex;flex-wrap:wrap;align-items:center;gap:12px 24px}
+.contact .links a{color:var(--accent)}
+
+/* footer */
+footer{position:relative;overflow:hidden;border-top:1px solid var(--border);background:var(--background)}
+footer .streak{width:96px;transform:rotate(16deg);opacity:.5}
+footer .wrap{display:flex;align-items:center;justify-content:space-between;padding-top:32px;padding-bottom:32px}
+footer p{margin:0;font-family:var(--font-mono);font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--caption)}
 </style>
 </head>
 <body>
-<div class="wrap">
-<nav><strong>Gorda Bitcoin</strong><span><a href="#about">About</a><a href="#work">Work</a><a href="#contact">Contact</a></span></nav>
 
-<header class="hero">
-  <h1>Design, build, AI and growth for Web3: campaigns, partners and volume that shows up on-chain.</h1>
-  <p class="lede">Seven years growing crypto products in LATAM, from SatoshiTango to KuCoin and MEXC. Now doing BD at Markets by Kinetiq on Hyperliquid, and measuring what I move.</p>
-  <a class="btn" href="#work">See the work</a><a class="btn ghost" href="#contact">Contact</a>
-  <div class="live">
-    <iframe src="hip3_dashboard_live.html" title="HIP-3 market share on Hyperliquid, live" loading="lazy"></iframe>
-    <p>Live: HIP-3 volume by deployer on Hyperliquid, from my own daily pipeline. <a href="hip3_dashboard_live.html">Open full dashboard</a></p>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#">Gorda Bitcoin</a>
+    <nav aria-label="Main">
+      <ul>
+        <li><a class="slide-underline" href="#about">About</a></li>
+        <li><a class="slide-underline" href="#work">Work</a></li>
+        <li><a class="slide-underline" href="#contact">Contact</a></li>
+      </ul>
+    </nav>
   </div>
 </header>
 
-<section id="about" class="about"><h2>About</h2>
-  <p>I’m Brenda, from Buenos Aires. I work on growth and business development for Web3 products: campaigns, affiliate and referral programs, KOLs and partners, with the goal of volume you can point to on-chain.</p><p>I started in audiovisual communication and packaging design, moved into crypto seven years ago, and spent the last years in growth and online operations at exchanges. Along the way I picked up the habit of building my own tools when the data I need doesn’t exist yet.</p><p>Right now: BD at Markets by Kinetiq, running DeSci LATAM, and learning to treat every campaign as something that has to show up in a dashboard.</p>
-</section>
+<main>
+<section>
+  <div class="hero-top">
+    <div class="cut" aria-hidden="true"></div>
+    <div class="streak" aria-hidden="true"></div>
+    <div class="wrap hero-inner">
+      <h1>Design, build, AI and growth for Web3: campaigns, partners and volume that shows up on-chain.</h1>
+      <div class="rule"></div>
+      <p class="lede">Seven years growing crypto products in LATAM, from SatoshiTango to KuCoin and MEXC. Now doing BD at Markets by Kinetiq on Hyperliquid, and measuring what I move.</p>
+      <div class="cta">
+        <a class="btn orange" href="#work">See the work</a>
+        <a class="btn outline" href="#contact">Contact</a>
+      </div>
+    </div>
+  </div>
 
-<section><h2>What I do</h2>
-  <div class="caps">
-    <div><h3>Growth</h3><p>Campaigns, affiliates, KOL and referral programs designed to end in measurable volume, not impressions.</p></div>
-    <div><h3>Partnerships</h3><p>Sourcing, negotiating and running partner programs with exchanges and Web3 projects across LATAM.</p></div>
-    <div><h3>Data</h3><p>I build my own pipelines and dashboards (public APIs, GitHub Actions, Sheets, live HTML) to track share and volume.</p></div>
-    <div><h3>Design &amp; build</h3><p>Design background plus AI-assisted building: small tools, interfaces and dashboards shipped end to end.</p></div>
+  <div class="wrap dash">
+    <div class="screen">
+      <iframe src="hip3_dashboard_live.html" title="HIP-3 market share on Hyperliquid, live" loading="lazy"></iframe>
+    </div>
+    <p class="cap">Live: HIP-3 volume by deployer on Hyperliquid, from my own daily pipeline. <a class="slide-underline" href="hip3_dashboard_live.html" target="_blank" rel="noreferrer">Open full dashboard</a></p>
   </div>
 </section>
 
-<section id="work"><h2>Work</h2>
-  <div class="work">
+<section class="block" id="about">
+  <div class="cut" aria-hidden="true"></div>
+  <div class="wrap inner about">
+    <p class="label">About</p>
+    <p>I'm Brenda, from Buenos Aires. I work on growth and business development for Web3 products: campaigns, affiliate and referral programs, KOLs and partners, with the goal of volume you can point to on-chain.</p>
+    <p>I started in audiovisual communication and packaging design, moved into crypto seven years ago, and spent the last years in growth and online operations at exchanges. Along the way I picked up the habit of building my own tools when the data I need doesn't exist yet.</p>
+    <p>Right now: BD at Markets by Kinetiq, running DeSci LATAM, and learning to treat every campaign as something that has to show up in a dashboard.</p>
+  </div>
+</section>
+
+<section class="block">
+  <div class="cut" aria-hidden="true"></div>
+  <div class="wrap inner">
+    <p class="label">What I do</p>
+    <div class="caps">
+      <div><span class="n">01</span><h3>Growth</h3><p>Campaigns, affiliates, KOL and referral programs designed to end in measurable volume, not impressions.</p></div>
+      <div><span class="n">02</span><h3>Partnerships</h3><p>Sourcing, negotiating and running partner programs with exchanges and Web3 projects across LATAM.</p></div>
+      <div><span class="n">03</span><h3>Data</h3><p>I build my own pipelines and dashboards (public APIs, GitHub Actions, Sheets, live HTML) to track share and volume.</p></div>
+      <div><span class="n">04</span><h3>Design &amp; build</h3><p>Design background plus AI-assisted building: small tools, interfaces and dashboards shipped end to end.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="work">
+  <div class="cut" aria-hidden="true"></div>
+  <div class="wrap inner">
+    <p class="label">Work</p>
+
     <article class="item">
-      <div><h3>HIP-3 market share on Hyperliquid, live</h3><span class="badge">In progress</span><span class="type">Dashboard</span></div>
-      <dl>
-        <dt>Problem</dt><dd>There was no public view of how volume splits between the deployers building on Hyperliquid's HIP-3, and the curated tables on Dune sit behind an Enterprise plan.</dd>
-        <dt>What I did</dt><dd><ul><li>Wrote a daily logger against Hyperliquid's public API (<code>perpDexs</code>, <code>metaAndAssetCtxs</code>) covering every HIP-3 deployer.</li><li>Automated it with GitHub Actions and a Google Cloud service account writing to a Sheet, one row per market per day.</li><li>Built a single-file interactive dashboard (Chart.js) that reads the published sheet, so it updates itself.</li></ul></dd>
-        <dt>Result</dt><dd>Five-plus days of data across all deployers. One deployer holds 94–98% of roughly $3B a day; the rest compete for the margin.</dd>
-        <dt>Link</dt><dd><a href="hip3_dashboard_live.html">Open the live dashboard</a></dd>
-      </dl>
-    </article>    <article class="item">
-      <div><h3>Business development at Markets by Kinetiq</h3><span class="badge">In progress</span><span class="type">Partnership</span></div>
-      <dl>
-        <dt>Problem</dt><dd>A new HIP-3 deployer and frontend on Hyperliquid needs partners, KOLs and traders in LATAM, and a way to know which of them actually move volume.</dd>
-        <dt>What I did</dt><dd><ul><li>Own partner and KOL sourcing for LATAM, from first contact to onboarding.</li><li>Track deployer volume and share daily with the pipeline above, so every conversation starts with a number.</li></ul></dd>
-        <dt>Result</dt><dd>Result pending — first monthly volume figures due October 2026.</dd>
-        <dt>Link</dt><dd><a href="https://markets.xyz">markets.xyz</a></dd>
-      </dl>
-    </article>    <article class="item">
-      <div><h3>DeSci LATAM and the DeSci Hub proposal</h3><span class="badge">Live</span><span class="type">Community</span></div>
-      <dl>
-        <dt>Problem</dt><dd>Decentralized science had almost no Spanish-speaking community and no shared home for regional builders.</dd>
-        <dt>What I did</dt><dd><ul><li>Run DeSci LATAM: community, events and coordination with DeSci Asia, DeSci India and DeSciWorld.</li><li>Co-lead the DeSci Hub proposal with partners across regions.</li></ul></dd>
-        <dt>Result</dt><dd>Result pending — member and event counts to be added.</dd>
-        <dt>Link</dt><dd><a href="https://x.com/GordaBitcoin">Follow along on X</a></dd>
-      </dl>
+      <div>
+        <h3>HIP-3 market share on Hyperliquid, live</h3>
+        <span class="badge">In progress</span><span class="type">Dashboard</span>
+      </div>
+      <div class="item-body">
+        <dl class="field"><dt>Problem</dt><dd>There was no public view of how volume splits between the deployers building on Hyperliquid's HIP-3, and the curated tables on Dune sit behind an Enterprise plan.</dd></dl>
+        <dl class="field"><dt>What I did</dt><dd><ul>
+          <li>Wrote a daily logger against Hyperliquid's public API (<code>perpDexs</code>, <code>metaAndAssetCtxs</code>) covering every HIP-3 deployer.</li>
+          <li>Automated it with GitHub Actions and a Google Cloud service account writing to a Sheet, one row per market per day.</li>
+          <li>Built a single-file interactive dashboard (Chart.js) that reads the published sheet, so it updates itself.</li>
+        </ul></dd></dl>
+        <dl class="field"><dt>Result</dt><dd class="strong">Five-plus days of data across all deployers. One deployer holds 94–98% of roughly $3B a day; the rest compete for the margin.</dd></dl>
+        <dl class="field"><dt>Link</dt><dd><a class="slide-underline" href="hip3_dashboard_live.html">Open the live dashboard</a></dd></dl>
+      </div>
+    </article>
+
+    <article class="item">
+      <div>
+        <h3>Business development at Markets by Kinetiq</h3>
+        <span class="badge">In progress</span><span class="type">Partnership</span>
+      </div>
+      <div class="item-body">
+        <dl class="field"><dt>Problem</dt><dd>A new HIP-3 deployer and frontend on Hyperliquid needs partners, KOLs and traders in LATAM, and a way to know which of them actually move volume.</dd></dl>
+        <dl class="field"><dt>What I did</dt><dd><ul>
+          <li>Own partner and KOL sourcing for LATAM, from first contact to onboarding.</li>
+          <li>Track deployer volume and share daily with the pipeline above, so every conversation starts with a number.</li>
+        </ul></dd></dl>
+        <dl class="field"><dt>Result</dt><dd class="strong">Result pending — first monthly volume figures due October 2026.</dd></dl>
+        <dl class="field"><dt>Link</dt><dd><a class="slide-underline" href="https://markets.xyz" target="_blank" rel="noreferrer">markets.xyz</a></dd></dl>
+      </div>
+    </article>
+
+    <article class="item">
+      <div>
+        <h3>DeSci LATAM and the DeSci Hub proposal</h3>
+        <span class="badge">Live</span><span class="type">Community</span>
+      </div>
+      <div class="item-body">
+        <dl class="field"><dt>Problem</dt><dd>Decentralized science had almost no Spanish-speaking community and no shared home for regional builders.</dd></dl>
+        <dl class="field"><dt>What I did</dt><dd><ul>
+          <li>Run DeSci LATAM: community, events and coordination with DeSci Asia, DeSci India and DeSciWorld.</li>
+          <li>Co-lead the DeSci Hub proposal with partners across regions.</li>
+        </ul></dd></dl>
+        <dl class="field"><dt>Result</dt><dd class="strong">Result pending — member and event counts to be added.</dd></dl>
+        <dl class="field"><dt>Link</dt><dd><a class="slide-underline" href="https://x.com/GordaBitcoin" target="_blank" rel="noreferrer">Follow along on X</a></dd></dl>
+      </div>
     </article>
   </div>
 </section>
 
-<section id="contact" class="contact"><h2>Contact</h2>
-  <p>If you’re building something in Web3 that needs growth with numbers behind it, write me. Mate is on me if you’re in Buenos Aires.</p>
-  <p><a href="https://www.linkedin.com/in/bpalav/">LinkedIn</a><a href="https://github.com/BrenPalav">GitHub</a><a href="https://x.com/GordaBitcoin">X</a></p>
+<section class="block contact" id="contact">
+  <div class="cut" aria-hidden="true"></div>
+  <div class="wrap inner">
+    <p class="label">Contact</p>
+    <p>If you're building something in Web3 that needs growth with numbers behind it, write me. Mate is on me if you're in Buenos Aires.</p>
+    <div class="links">
+      <a class="slide-underline" href="https://www.linkedin.com/in/bpalav/" target="_blank" rel="noreferrer">LinkedIn</a>
+      <a class="slide-underline" href="https://github.com/BrenPalav" target="_blank" rel="noreferrer">GitHub</a>
+      <a class="slide-underline" href="https://x.com/GordaBitcoin" target="_blank" rel="noreferrer">X</a>
+    </div>
+  </div>
 </section>
+</main>
 
-<footer>© 2026 Gorda Bitcoin · Buenos Aires</footer>
-</div>
+<footer>
+  <div class="streak" aria-hidden="true"></div>
+  <div class="wrap">
+    <p>© 2026 Gorda Bitcoin · Buenos Aires</p>
+  </div>
+</footer>
+
 </body>
 </html>
