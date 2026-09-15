@@ -207,7 +207,7 @@ async function loadData(){
 const EMBED = window.self!==window.top; if (EMBED) document.documentElement.classList.add('embedded');
 const charts = [];
 function applyTheme(light){ document.documentElement.dataset.theme = light?'light':''; const b=document.getElementById('themeBtn'); b.setAttribute('aria-pressed',light); b.lastElementChild.textContent = light?'Dark mode':'Light mode';
-  Chart.defaults.color = css('--ink-2'); Chart.defaults.borderColor = css('--grid'); charts.forEach(c=>{ c.options.scales && Object.values(c.options.scales).forEach(sc=>{ if(sc.grid) sc.grid.color=css('--grid'); }); c.update('none'); }); }
+  Chart.defaults.color = css('--muted-foreground'); Chart.defaults.borderColor = css('--grid'); charts.forEach(c=>{ c.options.scales && Object.values(c.options.scales).forEach(sc=>{ if(sc.grid) sc.grid.color=css('--grid'); }); c.update('none'); }); }
 document.getElementById('themeBtn').addEventListener('click',()=>applyTheme(document.documentElement.dataset.theme!=='light'));
 const MOBILE = () => window.innerWidth < 760;
 loadData().then(D=>{ render(D); if (EMBED) setTimeout(()=>window.scrollTo(0,0),50); });
@@ -226,7 +226,7 @@ const totals = D.days.map((_,i)=>Object.values(D.byDex).reduce((s,a)=>s+a[i],0))
 const order = D.order;
 
 Chart.defaults.font.family = css('--font-mono');
-Chart.defaults.color = css('--ink-2');
+Chart.defaults.color = css('--muted-foreground');
 Chart.defaults.borderColor = css('--grid');
 Chart.defaults.font.size = MOBILE()?11:12;
 
@@ -256,10 +256,10 @@ document.getElementById('calloutShare').textContent = `${(()=>{const top=order[o
 // Markets by index
 const coins = Object.keys(D.mkVol);
 document.getElementById('liveNote').textContent = D.live ? `Updated with data through ${labels[iLast]}. Refreshes itself every time the page loads.` : `Showing a saved copy (through ${labels[iLast]}); the live sheet could not be read.`;
-legend('legMk', coins.map(c=>[c.replace('mkts:',''),CC[c]]).concat([['Total open interest',css('--ink')]]));
+legend('legMk', coins.map(c=>[c.replace('mkts:',''),CC[c]]).concat([['Total open interest',css('--foreground')]]));
 charts[charts.length] = new Chart(document.getElementById('cMk'),{data:{labels,datasets:[
   ...coins.map(c=>({type:'bar',label:c.replace('mkts:',''),data:D.mkVol[c],backgroundColor:CC[c],stack:'v',yAxisID:'y'})),
-  {type:'line',label:'Total open interest',data:D.days.map((_,i)=>coins.reduce((s,c)=>s+D.mkOi[c][i],0)),borderColor:css('--ink'),borderWidth:2,pointRadius:3,yAxisID:'y2',tension:.25}
+  {type:'line',label:'Total open interest',data:D.days.map((_,i)=>coins.reduce((s,c)=>s+D.mkOi[c][i],0)),borderColor:css('--foreground'),borderWidth:2,pointRadius:3,yAxisID:'y2',tension:.25}
 ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt(c.parsed.y)}}},scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,ticks:{callback:fmt},title:{display:true,text:'24h volume'}},y2:{position:'right',grid:{drawOnChartArea:false},ticks:{callback:fmt},title:{display:true,text:'Open interest'}}}}});
 
 // Day selects
